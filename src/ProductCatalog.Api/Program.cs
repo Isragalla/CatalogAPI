@@ -58,4 +58,22 @@ app.MapPost("/api/products", async (Product product, AppDbContext db) =>
 })
 .WithName("CreateProduct");
 
+app.MapGet("/api/get-product/{id:int}", async (int id, AppDbContext db) =>
+{
+    var product = await db.Products.AsNoTracking()
+        .FirstOrDefaultAsync(p => p.Id == id);
+
+    if (product is null)
+    {
+        return Results.NotFound(new
+        {
+            message = $"Aucun produit trouvé avec l'identifiant {id}."
+        });
+    }
+
+    return Results.Ok(product);
+})
+.WithName("GetProductById");
+
+
 app.Run();
