@@ -39,14 +39,14 @@ app.MapGet("/health", () =>
     .WithName("HealthCheck");
 
 // GET : récupérer tous les produits
-app.MapGet("/api/products", async (AppDbContext db) =>
+app.MapGet("/api/get-all-products", async (AppDbContext db) =>
     await db.Products
         .AsNoTracking()
         .ToListAsync())
     .WithName("GetAllProducts");
 
 // POST : ajouter un produit
-app.MapPost("/api/products", async (Product product, AppDbContext db) =>
+app.MapPost("/api/create-product", async (Product product, AppDbContext db) =>
 {
     db.Products.Add(product);
     await db.SaveChangesAsync();
