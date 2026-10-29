@@ -52,7 +52,7 @@ app.MapPost("/api/create-product", async (Product product, AppDbContext db) =>
     await db.SaveChangesAsync();
 
     return Results.Created(
-        $"/api/products/{product.Id}",
+        $"/api/get-product/{product.Id}",
         product
     );
 })
