@@ -1,15 +1,24 @@
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using ProductCatalog.Api.Data;
 using ProductCatalog.Api.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuration de la connexion SQL Server
-var connectionString =
-    builder.Configuration.GetConnectionString("CatalogDbConnection");
+// Configuration de la base de données selon l'environnement
+if (builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseInMemoryDatabase("ProductCatalogTestDb"));
+}
+else
+{
+    var connectionString =
+        builder.Configuration.GetConnectionString("CatalogDbConnection");
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseSqlServer(connectionString));
+}
 
 // Activation de Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -25,7 +34,6 @@ app.UseSwaggerUI();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
     db.Database.EnsureCreated();
 }
 
@@ -58,6 +66,7 @@ app.MapPost("/api/create-product", async (Product product, AppDbContext db) =>
 })
 .WithName("CreateProduct");
 
+// GET : récupérer un produit par ID
 app.MapGet("/api/get-product/{id:int}", async (int id, AppDbContext db) =>
 {
     var product = await db.Products.AsNoTracking()
@@ -75,5 +84,6 @@ app.MapGet("/api/get-product/{id:int}", async (int id, AppDbContext db) =>
 })
 .WithName("GetProductById");
 
-
 app.Run();
+
+public partial class Program { }
