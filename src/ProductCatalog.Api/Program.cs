@@ -67,12 +67,33 @@ app.MapPost("/api/create-product", async (Product product, AppDbContext db) =>
 .WithName("CreateProduct");
 
 // GET : récupérer un produit par ID
-app.MapGet("/api/get-product/{id:int}", async (int id, AppDbContext db) =>
+// app.MapGet("/api/get-product/{id:int}", async (int id, AppDbContext db) =>
+// {
+//     var product = await db.Products.AsNoTracking()
+//         .FirstOrDefaultAsync(p => p.Id == id);
+
+//     if (product is null)
+//     {
+//         return Results.NotFound(new
+//         {
+//             message = $"Aucun produit trouvé avec l'identifiant {id}."
+//         });
+//     }
+
+//     return Results.Ok(product);
+// })
+// .WithName("GetProductById");
+
+// app.Run();
+
+// public partial class Program { }
+app.MapGet("/api/products/{id:int}", async (int id, AppDbContext db) =>
 {
-    var product = await db.Products.AsNoTracking()
+    var product = await db.Products
+        .AsNoTracking()
         .FirstOrDefaultAsync(p => p.Id == id);
 
-    if (product is null)
+    if (product == null)
     {
         return Results.NotFound(new
         {
